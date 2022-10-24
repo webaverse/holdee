@@ -61,12 +61,12 @@ export default e => {
     .applyMatrix4(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(1, 0, 0), -Math.PI*0.5))
     .toNonIndexed();
   
-  const texture = new THREE.TextureLoader().load(baseUrl + 'chevron2.svg');
-  texture.wrapS = THREE.RepeatWrapping;
-  texture.wrapT = THREE.RepeatWrapping;
+  const decalTexture = new THREE.Texture();
+  decalTexture.wrapS = THREE.RepeatWrapping;
+  decalTexture.wrapT = THREE.RepeatWrapping;
   const decalMaterial = new THREE.MeshBasicMaterial({
     color: 0xFF0000,
-    map: texture,
+    map: decalTexture,
     side: THREE.DoubleSide,
     // transparent: true,
   });
@@ -620,45 +620,43 @@ export default e => {
 
   let subApp = null;
   e.waitUntil((async () => {
-    // let u2 = baseUrl + 'megasword_v4_texta.glb';
-    let u2 = baseUrl + 'plant.glb'; // todo: Why "Access to script at 'https://compiler.webaverse.com/@proxy/https://compiler.webaverse.com/https:/webaverse.github.io/holdee/plant.glb' from origin 'https://local.webaverse.com' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource."
-    // let u2 = 'https:/webaverse.github.io/silsword/megasword_v4_texta.glb';
-    debugger
-    if (/^https?:/.test(u2)) {
-      // u2 = '/@proxy/' + u2;
-    }
+    const _loadModel = async () => {
+      // let u2 = baseUrl + 'megasword_v4_texta.glb';
+      let u2 = baseUrl + 'plant.glb';
+      /* if (/^https?:/.test(u2)) {
+        u2 = '/@proxy/' + u2;
+      } */
+      const m = await metaversefile.import(u2);
 
-    /*
-      https://compiler.webaverse.com/@proxy/https:/compiler.webaverse.com/https:/webaverse.github.io/holdee/megasword_v4_texta.glb   // error
-      //
-      https://compiler.webaverse.com/https:/compiler.webaverse.com/https:/webaverse.github.io/silsword/megasword_v4_texta.glb   // 200
-      https://compiler.webaverse.com/https:/webaverse.github.io/silsword/megasword_v4_texta.glb   // 307
-      https://webaverse.github.io/silsword/megasword_v4_texta.glb   // 200
-      https://compiler.webaverse.com/https:/compiler.webaverse.com/https:/webaverse.github.io/silsword/megasword_v4_texta.glb   // 200
-      https://compiler.webaverse.com/https:/webaverse.github.io/silsword/megasword_v4_texta.glb   // 307
-      https://webaverse.github.io/silsword/megasword_v4_texta.glb   // 200
-    */
+      subApp = metaversefile.createApp({
+        name: u2,
+      });
+      subApp.name = 'silsword mesh';
+      /* subApp.position.copy(app.position);
+      subApp.quaternion.copy(app.quaternion);
+      subApp.scale.copy(app.scale); */
+      app.add(subApp);
+      subApp.updateMatrixWorld();
+      subApp.contentId = u2;
+      subApp.instanceId = app.instanceId;
 
-    // todo: Why `silsword` repo not add `@proxy`, but `holdee` repo will ?
-
-    const m = await metaversefile.import(u2);
-
-    subApp = metaversefile.createApp({
-      name: u2,
-    });
-    subApp.name = 'silsword mesh';
-    /* subApp.position.copy(app.position);
-    subApp.quaternion.copy(app.quaternion);
-    subApp.scale.copy(app.scale); */
-    app.add(subApp);
-    subApp.updateMatrixWorld();
-    subApp.contentId = u2;
-    subApp.instanceId = app.instanceId;
-
-    for (const {key, value} of components) {
-      subApp.setComponent(key, value);
-    }
-    await subApp.addModule(m);
+      for (const {key, value} of components) {
+        subApp.setComponent(key, value);
+      }
+      await subApp.addModule(m);
+    };
+    const _loadDecal = async () => {
+      const src = baseUrl + 'chevron2.png';
+      const res = await fetch(src);
+      const blob = await res.blob();
+      const imageBitmap = await createImageBitmap(blob);
+      decalTexture.image = imageBitmap;
+      decalTexture.needsUpdate = true;
+    };
+    await Promise.all([
+      _loadModel(),
+      _loadDecal(),
+    ]);
   })());
 
   /* useActivate(() => {
