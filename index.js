@@ -626,6 +626,20 @@ export default e => {
     if (/^https?:/.test(u2)) {
       // u2 = '/@proxy/' + u2;
     }
+
+    /*
+      https://compiler.webaverse.com/@proxy/https:/compiler.webaverse.com/https:/webaverse.github.io/holdee/megasword_v4_texta.glb   // error
+      //
+      https://compiler.webaverse.com/https:/compiler.webaverse.com/https:/webaverse.github.io/silsword/megasword_v4_texta.glb   // 200
+      https://compiler.webaverse.com/https:/webaverse.github.io/silsword/megasword_v4_texta.glb   // 307
+      https://webaverse.github.io/silsword/megasword_v4_texta.glb   // 200
+      https://compiler.webaverse.com/https:/compiler.webaverse.com/https:/webaverse.github.io/silsword/megasword_v4_texta.glb   // 200
+      https://compiler.webaverse.com/https:/webaverse.github.io/silsword/megasword_v4_texta.glb   // 307
+      https://webaverse.github.io/silsword/megasword_v4_texta.glb   // 200
+    */
+
+    // todo: Why `silsword` repo not add `@proxy`, but `holdee` repo will ?
+
     const m = await metaversefile.import(u2);
 
     subApp = metaversefile.createApp({
