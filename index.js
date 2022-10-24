@@ -620,9 +620,9 @@ export default e => {
 
   let subApp = null;
   e.waitUntil((async () => {
-    // let u2 = baseUrl + 'megasword_v4_texta.glb';
+    let u2 = baseUrl + 'megasword_v4_texta.glb';
     // let u2 = baseUrl + 'plant.glb'; // todo: Why "Access to script at 'https://compiler.webaverse.com/@proxy/https://compiler.webaverse.com/https:/webaverse.github.io/holdee/plant.glb' from origin 'https://local.webaverse.com' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource."
-    let u2 = 'https:/webaverse.github.io/silsword/megasword_v4_texta.glb';
+    // let u2 = 'https:/webaverse.github.io/silsword/megasword_v4_texta.glb';
     if (/^https?:/.test(u2)) {
       u2 = '/@proxy/' + u2;
     }
